@@ -1,0 +1,360 @@
+{
+  "info": {
+    "name": "Contribution Tracker API",
+    "description": "Requests for the GitHub Contribution Tracker backend (`/api/me`, `/api/repos`, `/api/pulls`, `/api/stats`).\n\n**Mock mode:** run the server with `MOCK=true`. No login needed; leave `sessionToken` empty.\n\n**Real mode:** sign in at `{{baseUrl}}/api/auth/github` in a browser, then copy the value of the `connect.sid` cookie (DevTools > Application > Cookies) into the `sessionToken` variable (Current value).\n\n**Never commit a real `sessionToken`.** It grants access to the signed-in GitHub account. Keep it in the Current value only.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "cookieName",
+      "value": "connect.sid"
+    },
+    {
+      "key": "sessionToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /api/me",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"has username\", () => pm.expect(pm.response.json()).to.have.property(\"username\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Signed-in GitHub user: username, avatarUrl, profileUrl.",
+        "url": {
+          "raw": "{{baseUrl}}/api/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /api/repos",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"is an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Repos the user has PRs in (other people's repos by default).",
+        "url": {
+          "raw": "{{baseUrl}}/api/repos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "repos"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /api/repos?scope=all",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"is an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Same, including the user's own repos.",
+        "url": {
+          "raw": "{{baseUrl}}/api/repos?scope=all",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "repos"
+          ],
+          "query": [
+            {
+              "key": "scope",
+              "value": "all"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /api/pulls",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"is an array\", () => pm.expect(pm.response.json()).to.be.an(\"array\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "All PRs. Filters: state=open|merged|closed|all, repo=owner/name, scope=external|all.",
+        "url": {
+          "raw": "{{baseUrl}}/api/pulls",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "pulls"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /api/pulls?state=merged",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"only merged\", () => pm.response.json().forEach((p) => pm.expect(p.state).to.eql(\"merged\")));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Merged PRs only.",
+        "url": {
+          "raw": "{{baseUrl}}/api/pulls?state=merged",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "pulls"
+          ],
+          "query": [
+            {
+              "key": "state",
+              "value": "merged"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /api/stats",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"has totals and streak\", () => pm.expect(pm.response.json()).to.have.all.keys(\"totals\", \"streak\", \"perRepo\", \"activityByDay\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Totals, current and longest streak, per-repo counts, activity by day.",
+        "url": {
+          "raw": "{{baseUrl}}/api/stats",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "stats"
+          ]
+        }
+      }
+    },
+    {
+      "name": "GET /api/stats?scope=all",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Stats including the user's own repos.",
+        "url": {
+          "raw": "{{baseUrl}}/api/stats?scope=all",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "stats"
+          ],
+          "query": [
+            {
+              "key": "scope",
+              "value": "all"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "ERROR: /api/pulls?state=bogus (expects 400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 400\", () => pm.response.to.have.status(400));",
+              "pm.test(\"error shape\", () => pm.expect(pm.response.json().error.code).to.eql(\"BAD_REQUEST\"));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Invalid parameter must return 400 BAD_REQUEST in the standard error shape.",
+        "url": {
+          "raw": "{{baseUrl}}/api/pulls?state=bogus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "pulls"
+          ],
+          "query": [
+            {
+              "key": "state",
+              "value": "bogus"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "CORS: OPTIONS /api/me (expects 204)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"status 204\", () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "OPTIONS",
+        "header": [
+          {
+            "key": "Cookie",
+            "value": "{{cookieName}}={{sessionToken}}"
+          }
+        ],
+        "description": "Preflight request used by the browser frontend.",
+        "url": {
+          "raw": "{{baseUrl}}/api/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      }
+    }
+  ]
+}

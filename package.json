@@ -1,0 +1,19 @@
+{
+  "name": "contribution-tracker-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file=.env.local server.js",
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "connect-mongo": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "mongoose": "^9.10.4",
+    "passport": "^0.7.0",
+    "passport-github2": "^0.1.12"
+  }
+}
